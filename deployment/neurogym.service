@@ -1,0 +1,44 @@
+# Systemd service file for NeuroGym Docker service
+# 
+# Installation instructions:
+# 1. Copy this file to /etc/systemd/system/
+#    sudo cp deployment/neurogym.service /etc/systemd/system/
+#
+# 2. Update WorkingDirectory to match your installation path
+#
+# 3. Reload systemd and enable the service
+#    sudo systemctl daemon-reload
+#    sudo systemctl enable neurogym.service
+#    sudo systemctl start neurogym.service
+#
+# 4. Check status
+#    sudo systemctl status neurogym.service
+
+[Unit]
+Description=NeuroGym Web Service (Docker)
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/pi/neurogym
+User=pi
+Group=pi
+
+# Start the service
+ExecStart=/usr/bin/docker compose up -d
+
+# Stop the service
+ExecStop=/usr/bin/docker compose down
+
+# Reload the service
+ExecReload=/usr/bin/docker compose restart
+
+# Restart policy
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
