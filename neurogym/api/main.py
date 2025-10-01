@@ -7,10 +7,22 @@ enabling web-based access to neuroscience tasks.
 
 from typing import Any, Dict, List, Optional
 
+import numpy as np
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 import neurogym as ngym
+
+
+def convert_numpy(obj: Any) -> Any:
+    """Convert numpy types to Python native types."""
+    if isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    return obj
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -118,12 +130,12 @@ async def create_environment(config: EnvironmentConfig) -> EnvironmentInfo:
             session_id=session_id,
             task_name=config.task_name,
             observation_space={
-                "shape": list(obs_space.shape),
+                "shape": [int(x) for x in obs_space.shape],
                 "dtype": str(obs_space.dtype),
             },
             action_space={
-                "n": getattr(act_space, "n", None),
-                "shape": list(getattr(act_space, "shape", [])),
+                "n": int(act_space.n) if hasattr(act_space, "n") else None,
+                "shape": [int(x) for x in getattr(act_space, "shape", [])],
             },
         )
     except Exception as e:
@@ -167,7 +179,7 @@ async def step_environment(session_id: str, action_req: ActionRequest) -> StepRe
             reward=float(reward),
             terminated=bool(terminated),
             truncated=bool(truncated),
-            info=info if isinstance(info, dict) else {},
+            info={k: convert_numpy(v) for k, v in info.items()} if isinstance(info, dict) else {},
         )
     except Exception as e:
         raise HTTPException(
@@ -219,12 +231,12 @@ async def get_environment_info(session_id: str) -> EnvironmentInfo:
             session_id=session_id,
             task_name=task_name,
             observation_space={
-                "shape": list(obs_space.shape),
+                "shape": [int(x) for x in obs_space.shape],
                 "dtype": str(obs_space.dtype),
             },
             action_space={
-                "n": getattr(act_space, "n", None),
-                "shape": list(getattr(act_space, "shape", [])),
+                "n": int(act_space.n) if hasattr(act_space, "n") else None,
+                "shape": [int(x) for x in getattr(act_space, "shape", [])],
             },
         )
     except Exception as e:
