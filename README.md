@@ -21,6 +21,7 @@ Table of Contents
     - [2.1 Reinforcement Learning Support](#21-reinforcement-learning-support)
     - [2.2: Editable/Development Mode](#22-editabledevelopment-mode)
   - [3. Psychopy Installation (Optional)](#3-psychopy-installation-optional)
+  - [4. Docker Installation (Raspberry Pi 5)](#4-docker-installation-raspberry-pi-5)
 - [Tasks](#tasks)
 - [Wrappers](#wrappers)
 - [Configuration](#configuration)
@@ -29,6 +30,7 @@ Table of Contents
   - [3. With a Dictionary](#3-with-a-dictionary)
 - [Examples](#examples)
   - [Vanilla RNN Support in RecurrentPPO](#vanilla-rnn-support-in-recurrentppo)
+- [Web Service API](#web-service-api)
 - [Custom Tasks](#custom-tasks)
 - [Acknowledgements](#acknowledgements)
 
@@ -106,6 +108,25 @@ If you need psychopy for your project, additionally run
 ```bash
 pip install psychopy
 ```
+
+#### 4. Docker Installation (Raspberry Pi 5)
+
+NeuroGym can be deployed as a web service using Docker, optimized for Raspberry Pi 5. This allows you to run NeuroGym environments as a REST API accessible over your network.
+
+**Quick Setup:**
+
+```bash
+# Clone the repository
+git clone https://github.com/neurogym/neurogym.git
+cd neurogym
+
+# Run the automated setup script
+bash deployment/setup-raspberry-pi.sh
+```
+
+The API will be available at `http://localhost:8000` with interactive documentation at `http://localhost:8000/docs`.
+
+For detailed instructions, see [README.docker.md](README.docker.md).
 
 ### Tasks
 
@@ -203,6 +224,39 @@ pip install git+https://github.com/neurogym/stable-baselines3-contrib.git@rnn_po
 ```
 
 This will install the version with vanilla RNN support from the `rnn_policy_addition` branch in our fork.
+
+### Web Service API
+
+NeuroGym includes a REST API for remote access to environments, perfect for distributed computing or web applications.
+
+**Example Usage:**
+
+```python
+import requests
+
+# Create environment
+response = requests.post(
+    "http://localhost:8000/environments",
+    json={"task_name": "PerceptualDecisionMaking-v0", "kwargs": {"dt": 100}}
+)
+session_id = response.json()["session_id"]
+
+# Reset environment
+response = requests.post(f"http://localhost:8000/environments/{session_id}/reset")
+observation = response.json()["observation"]
+
+# Take actions
+for _ in range(10):
+    response = requests.post(
+        f"http://localhost:8000/environments/{session_id}/step",
+        json={"session_id": session_id, "action": 1}
+    )
+    result = response.json()
+```
+
+For a complete client example, see [examples/api_client_example.py](examples/api_client_example.py).
+
+For Docker deployment instructions, see [README.docker.md](README.docker.md).
 
 ### Custom Tasks
 
