@@ -4,6 +4,14 @@ Este documento describe cómo instalar y ejecutar NeuroGym en Raspberry Pi 5 uti
 
 This document describes how to install and run NeuroGym on Raspberry Pi 5 using Docker and how to use the web service.
 
+---
+
+**🇪🇸 ¿Prefieres una guía rápida en español?** → [INICIO_RAPIDO_RPI5.md](INICIO_RAPIDO_RPI5.md)
+
+**🇬🇧 Looking for a quick English guide?** → Continue reading below or see [QUICK_REFERENCE.md](deployment/QUICK_REFERENCE.md)
+
+---
+
 ## Requisitos / Requirements
 
 ### Hardware

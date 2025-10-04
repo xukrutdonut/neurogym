@@ -126,7 +126,9 @@ bash deployment/setup-raspberry-pi.sh
 
 The API will be available at `http://localhost:8000` with interactive documentation at `http://localhost:8000/docs`.
 
-For detailed instructions, see [README.docker.md](README.docker.md).
+**Documentation / Documentación:**
+- 🇬🇧 English: [README.docker.md](README.docker.md) - Detailed Docker guide
+- 🇪🇸 Español: [INICIO_RAPIDO_RPI5.md](INICIO_RAPIDO_RPI5.md) - Guía rápida en español
 
 ### Tasks
 
